@@ -19,8 +19,6 @@ class Listener(StreamListener):
     def on_error(self, status):
         print(status)
 
-
-
 def main():
     #This handles Twitter authenification and the connection to Twitter Streaming API
     listener = Listener()
@@ -28,9 +26,8 @@ def main():
     auth.set_access_token(access_token, access_token_secret)
     stream = Stream(auth, listener)
 
-    #This line filter Twitter Streams to capture data by the keywords: 'python', 'javascript', 'ruby'
-    stream.filter(track=['python', 'javascript', 'ruby'])
-	
+    #This line filter Twitter Streams to capture data by the keywords:
+    stream.filter(track=['comic'], async=True)
 	
 if __name__ == '__main__':
 	main()
