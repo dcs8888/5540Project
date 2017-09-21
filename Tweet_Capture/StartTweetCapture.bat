@@ -1,1 +1,1 @@
-python Tweet_Capture.py > tweets.json
+python Tweet_Capture.py
