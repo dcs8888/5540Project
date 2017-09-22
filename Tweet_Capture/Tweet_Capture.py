@@ -3,6 +3,7 @@ from tweepy import OAuthHandler
 from tweepy import Stream
 import sys
 import time
+import json
 
 access_token = "908502750618619904-2nW38xadA7RD7jrtk3CrlDQXX8IoTHs"
 access_token_secret = "czJk0wv9airHE0LMUjoGKxi2gUb38vQQFswQ99UuxYhOA"
@@ -12,17 +13,18 @@ consumer_secret = "aLD9lD9vX38pULHjp5By4k6dppZERzlnUdzgpGd9VnZpO3VmDd"
 class Listener(StreamListener):
 
     def __init__(self, max=10):
-        print(max)
         self.count = 0
         self.max = max
-        self.file = open("tweet.json", "w")
 
     def on_data(self, data):
-        self.file.write(data)
-        self.count += 1
-        if self.count >= self.max:
+        tweet_ok = CheckDeletedTweet(data)
+        if (self.count >= self.max):
             sys.exit(0)
-
+        if tweet_ok:
+            self.count += 1
+            CheckTweet(data)
+        
+            
     def limit_handled(self, cursor):
         while True:
             try:
@@ -33,7 +35,22 @@ class Listener(StreamListener):
     def on_error(self, status):
         if status_code == 420:
             return False
-        print(status)
+
+def CheckTweet(tweet):
+    loaded_tweet = json.loads(tweet)
+
+    for line in loaded_tweet['entities']['urls']:
+        if line.get('expanded_url'):
+            print(line['expanded_url'].encode('utf-8').strip())
+
+    for line in loaded_tweet['entities']['hashtags']:
+        if line.get('text'):
+            print(line['text'].encode('utf-8').strip())
+
+def CheckDeletedTweet(tweet):
+    if 'delete' in tweet:
+        return False
+    return True
 
 def main():
 
@@ -42,7 +59,6 @@ def main():
     auth.set_access_token(access_token, access_token_secret)
     stream = Stream(auth, listener)
 
-    #stream.filter(locations=[-125,25,-65,48], async=True)
     stream.sample()
     
 if __name__ == '__main__':

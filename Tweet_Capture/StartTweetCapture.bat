@@ -1,1 +1,1 @@
-python Tweet_Capture.py
+python Tweet_Capture.py 1> tweets.json 2>error.log
